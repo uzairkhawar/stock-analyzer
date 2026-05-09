@@ -10,3 +10,7 @@ bt_sa.json
 sig_aapl.json
 sig_2222.json
 .DS_Store
+data/cache/
+data/last_backtest_*.json
+charts/*.png
+reports/
