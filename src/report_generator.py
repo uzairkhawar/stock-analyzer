@@ -20,7 +20,7 @@ def build_scenarios(snap, score, setup):
     res1 = levels.get("nearest_resistance"); res2 = levels.get("next_resistance")
     sup1 = levels.get("nearest_support"); cls = score["classification"]
     bullish = (f"If price closes decisively above {res1:.2f} on above-average volume, "
-               f"the next target is {res2:.2f}." if res1 else
+               f"the next target is {res2:.2f}." if (res1 and res2) else
                "If price reclaims recent highs on rising volume, the trend continues.")
     base = (f"With price at {px:.2f}, base case is range between {sup1:.2f} and {res1:.2f}."
             if sup1 and res1 else "Base case is consolidation around current levels.")
