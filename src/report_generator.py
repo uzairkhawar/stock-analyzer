@@ -120,6 +120,12 @@ def analyze_stock(ticker, market="US", horizon="1Y", account_equity=None,
     result["final_signal"] = compute_signal(
         analysis=result, backtest_overall=backtest_overall,
     )
+        # Conviction path + immutable ledger entry
+    try:
+        from src.conviction_path import build_path
+        result["conviction_path"] = build_path(result, backtest_overall=backtest_overall)
+    except Exception as e:
+        logger.warning("conviction_path failed: %s", e)
     return result
 
 
