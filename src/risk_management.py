@@ -91,9 +91,11 @@ def build_setups(df_enriched, snap):
     def _make(style, entry, sl, rationale, invalidation):
         if entry <= 0 or sl <= 0 or sl >= entry: return None
         risk = entry - sl
-        tp1 = nearest_res if (nearest_res and nearest_res > entry) else entry + 2 * risk
-        tp2 = next_res if (next_res and next_res > tp1) else entry + 3 * risk
-        tp3 = third_res if (third_res and third_res > tp2) else entry + 5 * risk
+        # Cap TPs at realistic swing-trade ceilings (no stale year-old highs)
+        max_tp1 = entry * 1.12; max_tp2 = entry * 1.20; max_tp3 = entry * 1.35
+        tp1 = nearest_res if (nearest_res and entry < nearest_res <= max_tp1) else min(entry + 2 * risk, max_tp1)
+        tp2 = next_res if (next_res and tp1 < next_res <= max_tp2) else min(entry + 3 * risk, max_tp2)
+        tp3 = third_res if (third_res and tp2 < third_res <= max_tp3) else min(entry + 5 * risk, max_tp3)
         rr1 = (tp1 - entry) / risk if risk > 0 else 0
         rr2 = (tp2 - entry) / risk if risk > 0 else 0
         stop_width = (risk / entry) * 100 if entry else 0
