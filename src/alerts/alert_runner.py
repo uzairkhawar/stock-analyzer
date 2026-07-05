@@ -51,14 +51,14 @@ def _should_alert(prev, sig, cp):
     if name not in ALERT_SIGNALS: return False
     if not prev: return True
     if prev.get("last_signal") != name: return True
-    if cp and prev.get("last_gates") != cp.get("satisfied_count"): return True
+    # gates dedup removed - only label changes fire re-alerts
     return False
 
-def _latest_price(ticker):
+def _history_lookup(ticker):
     try:
-        df = DEFAULT_PROVIDER.fetch_ohlcv(ticker, period="5d", interval="1d")
+        df = DEFAULT_PROVIDER.fetch_ohlcv(ticker, period="1mo", interval="1d")
         if df is not None and not df.empty:
-            return float(df["Close"].iloc[-1])
+            return df
     except Exception: pass
     return None
 
@@ -92,7 +92,7 @@ def run_once(notifier=None):
                 failed.append({"ticker": t, "error": str(e)})
     _save_state(state)
     resolved = 0
-    try: resolved = resolve_pending(_latest_price)
+    try: resolved = resolve_pending(_history_lookup)
     except Exception as e: logger.warning("Ledger resolution failed: %s", e)
     return {"sent": sent, "skipped": skipped, "failed": failed,
             "resolved": resolved,
