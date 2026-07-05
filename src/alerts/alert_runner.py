@@ -10,7 +10,7 @@ from src.signal_ledger import resolve_pending
 logger = logging.getLogger("stock_analyzer.alerts")
 STATE_PATH = config.DATA_DIR / "alert_state.json"
 WATCHLIST_PATH = config.PROJECT_ROOT / "watchlist.json"
-ALERT_SIGNALS = {"Strong Candidate","Watchlist Candidate","Wait for Breakout","Wait for Pullback"}
+ALERT_SIGNALS = {"Strong Candidate","Wait for Breakout"}  # tightened based on 2-week performance
 
 def _load_watchlist():
     if WATCHLIST_PATH.exists():
@@ -56,7 +56,7 @@ def _should_alert(prev, sig, cp):
 
 def _history_lookup(ticker):
     try:
-        df = DEFAULT_PROVIDER.fetch_ohlcv(ticker, period="1mo", interval="1d")
+        df = DEFAULT_PROVIDER.fetch_ohlcv(ticker, period="3mo", interval="1d")
         if df is not None and not df.empty:
             return df
     except Exception: pass
